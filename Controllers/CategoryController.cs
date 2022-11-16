@@ -1,4 +1,5 @@
 ﻿using AspNetCoreUdemy.Data;
+using AspNetCoreUdemy.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
 
@@ -15,7 +16,7 @@ namespace AspNetCoreUdemy.Controllers
 
         public IActionResult Index()
         {
-            var objCategoryList = _db.Categories.ToList();
+            IEnumerable<Category> objCategoryList = _db.Categories;
             return View(objCategoryList);
         }
     }
