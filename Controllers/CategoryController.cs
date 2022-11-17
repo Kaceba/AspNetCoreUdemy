@@ -32,7 +32,7 @@ namespace AspNetCoreUdemy.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Category obj)
         {
-            if (obj.Name == obj.DisplayOrder.ToString()) 
+            if (obj.Name == obj.DisplayOrder.ToString())
             {
                 ModelState.AddModelError("NameEqualDOrder", "The Name can't match the Display Order");
             }
@@ -40,6 +40,9 @@ namespace AspNetCoreUdemy.Controllers
             {
                 _db.Categories.Add(obj);
                 _db.SaveChanges();
+
+                TempData["Success"] = "Category created successfully";
+
                 return RedirectToAction("Index");
             }
             return View(obj);
@@ -47,7 +50,7 @@ namespace AspNetCoreUdemy.Controllers
 
         public IActionResult Edit(int? id)
         {
-            if (id == null || id == 0) 
+            if (id == null || id == 0)
             {
                 return NotFound();
             }
@@ -55,7 +58,7 @@ namespace AspNetCoreUdemy.Controllers
             //var categoryFromDbFirst = _db.Categories.FirstOrDefault(u => u.Id == id);
             //var categoryFromDbSingle = _db.Categories.SingleOrDefault(u => u.Id == id);
 
-            if(categoryFromDb == null)
+            if (categoryFromDb == null)
             {
                 return NotFound();
             }
@@ -68,17 +71,57 @@ namespace AspNetCoreUdemy.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Category obj)
         {
-            if (obj.Name == obj.DisplayOrder.ToString()) 
+            if (obj.Name == obj.DisplayOrder.ToString())
             {
                 ModelState.AddModelError("NameEqualDOrder", "The Name can't match the Display Order");
             }
             if (ModelState.IsValid)
             {
-                _db.Categories.Add(obj);
+                _db.Categories.Update(obj);
                 _db.SaveChanges();
+
+                TempData["Success"] = "Category edited successfully";
+
                 return RedirectToAction("Index");
             }
             return View(obj);
+        }
+        public IActionResult Delete(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            var categoryFromDb = _db.Categories.Find(id);
+            //var categoryFromDbFirst = _db.Categories.FirstOrDefault(u => u.Id == id);
+            //var categoryFromDbSingle = _db.Categories.SingleOrDefault(u => u.Id == id);
+
+            if (categoryFromDb == null)
+            {
+                return NotFound();
+            }
+
+            return View(categoryFromDb);
+        }
+
+        //POST
+        [HttpPost,ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeletePOST(int? id)
+        {
+            var obj = _db.Categories.Find(id);
+
+            if (obj == null)
+            {
+                return NotFound();
+            }
+
+            _db.Categories.Remove(obj);
+            _db.SaveChanges();
+
+            TempData["Success"] = "Category deleted successfully";
+
+            return RedirectToAction("Index");
         }
     }
 }
