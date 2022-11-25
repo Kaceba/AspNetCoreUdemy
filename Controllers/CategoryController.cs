@@ -14,9 +14,29 @@ namespace AspNetCoreUdemy.Controllers
             this._db = db;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string sortOrder)
         {
-            IEnumerable<Category> objCategoryList = _db.Categories;
+            ViewBag.NameSortParam = string.IsNullOrEmpty(sortOrder) ? "Name_desc" : "";
+            ViewBag.DateSortParam = sortOrder == "Dorder" ? "Dorder_desc" : "Dorder";
+            var Categories = from c in _db.Categories
+                             select c;
+            switch (sortOrder) 
+            {
+                case "Name_desc":
+                    Categories = Categories.OrderByDescending(c => c.Name);
+                    break;
+                case "Dorder":
+                    Categories = Categories.OrderBy(c => c.DisplayOrder);
+                    break;
+                case "Dorder_desc":
+                    Categories = Categories.OrderByDescending(c => c.DisplayOrder);
+                    break;
+                default:
+                    Categories = Categories.OrderBy(c => c.Name);
+                    break;
+            }
+
+            IEnumerable<Category> objCategoryList = Categories;
             return View(objCategoryList);
         }
 
