@@ -14,12 +14,18 @@ namespace AspNetCoreUdemy.Controllers
             this._db = db;
         }
 
-        public IActionResult Index(string sortOrder)
+        public IActionResult Index(string sortOrder, string searchString)
         {
             ViewBag.NameSortParam = string.IsNullOrEmpty(sortOrder) ? "Name_desc" : "";
-            ViewBag.DateSortParam = sortOrder == "Dorder" ? "Dorder_desc" : "Dorder";
+            ViewBag.DorderSortParam = sortOrder == "Dorder" ? "Dorder_desc" : "Dorder";
             var Categories = from c in _db.Categories
                              select c;
+
+            if (!String.IsNullOrEmpty(searchString)) 
+            {
+                Categories = Categories.Where(c => c.Name.Contains(searchString));
+            }
+
             switch (sortOrder) 
             {
                 case "Name_desc":

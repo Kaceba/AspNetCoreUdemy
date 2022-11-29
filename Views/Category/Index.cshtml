@@ -22,10 +22,12 @@
     <thead>
         <tr>
             <th>
-                Category Name
+                @Html.ActionLink("Category Name", "Index", "Category", new { sortOrder = ViewBag.NameSortParam })
+                @*Category Name*@
             </th>
             <th>
-                Display Order
+                @Html.ActionLink("Display Order", "Index", "Category", new { sortOrder = ViewBag.DorderSortParam })
+                @*Display Order*@
             </th>
         </tr>
     </thead>
