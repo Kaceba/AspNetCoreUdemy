@@ -21,12 +21,12 @@ namespace AspNetCoreUdemy.Controllers
             var Categories = from c in _db.Categories
                              select c;
 
-            if (!String.IsNullOrEmpty(searchString)) 
+            if (!String.IsNullOrEmpty(searchString))
             {
                 Categories = Categories.Where(c => c.Name.Contains(searchString));
             }
 
-            switch (sortOrder) 
+            switch (sortOrder)
             {
                 case "Name_desc":
                     Categories = Categories.OrderByDescending(c => c.Name);
@@ -80,16 +80,16 @@ namespace AspNetCoreUdemy.Controllers
             {
                 return NotFound();
             }
-            var categoryFromDb = _db.Categories.Find(id);
-            //var categoryFromDbFirst = _db.Categories.FirstOrDefault(u => u.Id == id);
+            //var categoryFromDb = _db.Categories.Find(id);
+            var categoryFromDbFirst = _db.Categories.FirstOrDefault(u => u.Id == id);
             //var categoryFromDbSingle = _db.Categories.SingleOrDefault(u => u.Id == id);
 
-            if (categoryFromDb == null)
+            if (categoryFromDbFirst == null)
             {
                 return NotFound();
             }
 
-            return View(categoryFromDb);
+            return View(categoryFromDbFirst);
         }
 
         //POST
@@ -131,7 +131,7 @@ namespace AspNetCoreUdemy.Controllers
         }
 
         //POST
-        [HttpPost,ActionName("Delete")]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeletePOST(int? id)
         {
