@@ -1,4 +1,5 @@
 ﻿using AspNetCoreUdemy.DataAccess;
+using AspNetCoreUdemy.DataAccess.Repository.IRepository;
 using AspNetCoreUdemy.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
@@ -7,18 +8,18 @@ namespace AspNetCoreUdemy.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CategoryController(ApplicationDbContext db)
+        public CategoryController(IUnitOfWork unitOfWork)
         {
-            this._db = db;
+            this._unitOfWork = unitOfWork;
         }
 
         public IActionResult Index(string sortOrder, string searchString)
         {
             ViewBag.NameSortParam = string.IsNullOrEmpty(sortOrder) ? "Name_desc" : "";
             ViewBag.DorderSortParam = sortOrder == "Dorder" ? "Dorder_desc" : "Dorder";
-            var Categories = from c in _db.Categories
+            var Categories = from c in _unitOfWork.Category.GetAll()
                              select c;
 
             if (!String.IsNullOrEmpty(searchString))
@@ -64,8 +65,8 @@ namespace AspNetCoreUdemy.Controllers
             }
             if (ModelState.IsValid)
             {
-                _db.Categories.Add(obj);
-                _db.SaveChanges();
+                _unitOfWork.Category.Add(obj);
+                _unitOfWork.Save();
 
                 TempData["Success"] = "Category created successfully";
 
@@ -81,7 +82,7 @@ namespace AspNetCoreUdemy.Controllers
                 return NotFound();
             }
             //var categoryFromDb = _db.Categories.Find(id);
-            var categoryFromDbFirst = _db.Categories.FirstOrDefault(u => u.Id == id);
+            var categoryFromDbFirst = _unitOfWork.Category.GetFirstOrDefault(u => u.Id == id);
             //var categoryFromDbSingle = _db.Categories.SingleOrDefault(u => u.Id == id);
 
             if (categoryFromDbFirst == null)
@@ -103,8 +104,8 @@ namespace AspNetCoreUdemy.Controllers
             }
             if (ModelState.IsValid)
             {
-                _db.Categories.Update(obj);
-                _db.SaveChanges();
+                _unitOfWork.Category.Update(obj);
+                _unitOfWork.Save();
 
                 TempData["Success"] = "Category edited successfully";
 
@@ -118,16 +119,17 @@ namespace AspNetCoreUdemy.Controllers
             {
                 return NotFound();
             }
-            var categoryFromDb = _db.Categories.Find(id);
-            //var categoryFromDbFirst = _db.Categories.FirstOrDefault(u => u.Id == id);
+
+            //var categoryFromDb = _db.Categories.Find(id);
+            var categoryFromDbFirst = _unitOfWork.Category.GetFirstOrDefault(u => u.Id == id);
             //var categoryFromDbSingle = _db.Categories.SingleOrDefault(u => u.Id == id);
 
-            if (categoryFromDb == null)
+            if (categoryFromDbFirst == null)
             {
                 return NotFound();
             }
 
-            return View(categoryFromDb);
+            return View(categoryFromDbFirst);
         }
 
         //POST
@@ -135,15 +137,15 @@ namespace AspNetCoreUdemy.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeletePOST(int? id)
         {
-            var obj = _db.Categories.Find(id);
+            var obj = _unitOfWork.Category.GetFirstOrDefault(u => u.Id == id);
 
             if (obj == null)
             {
                 return NotFound();
             }
 
-            _db.Categories.Remove(obj);
-            _db.SaveChanges();
+            _unitOfWork.Category.Remove(obj);
+            _unitOfWork.Save();
 
             TempData["Success"] = "Category deleted successfully";
 
