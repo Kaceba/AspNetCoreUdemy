@@ -1,4 +1,5 @@
 ﻿using AspNetCoreUdemy.DataAccess.Repository.IRepository;
+using AspNetCoreUdemy.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,24 +8,24 @@ using System.Threading.Tasks;
 
 namespace AspNetCoreUdemy.DataAccess.Repository
 {
-    public class UnitOfWork : IUnitOfWork
+    public class CoverTypeRepository : Repository<CoverType>, ICoverTypeRepository
     {
+
         private ApplicationDbContext _db;
 
-        public UnitOfWork(ApplicationDbContext db)
+        public CoverTypeRepository(ApplicationDbContext db) : base(db)
         {
             this._db = db;
-            Category = new CategoryRepository(_db);
-            CoverType = new CoverTypeRepository(_db);
         }
-
-        public ICategoryRepository Category { get; private set; }
-
-        public ICoverTypeRepository CoverType { get; private set; }
 
         public void Save()
         {
             _db.SaveChanges();
+        }
+
+        public void Update(CoverType obj)
+        {
+            _db.CoverTypes.Update(obj);
         }
     }
 }
