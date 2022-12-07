@@ -1,7 +1,9 @@
 ﻿using AspNetCoreUdemy.DataAccess;
 using AspNetCoreUdemy.DataAccess.Repository.IRepository;
 using AspNetCoreUdemy.Models;
+using AspNetCoreUdemy.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Runtime.CompilerServices;
 
 namespace AspNetCoreUdemy.Controllers;
@@ -25,28 +27,47 @@ public class ProductController : Controller
 
     public IActionResult Upsert(int? id)
     {
-        Product product = new();
+        ProductVM productVM = new()
+        {
+            Product = new(),
+
+            CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            }),
+
+            CoverTypeList = _unitOfWork.CoverType.GetAll().Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            }),
+
+        };
+
         if (id == null || id == 0)
         {
             //Create product
-            return View(product);
+            //ViewBag.CategoryList = CategoryList;
+            //ViewData["CoverTypeList"] = CoverTypeList;
+            return View(productVM);
         }
-        else 
+        else
         {
             //Update product
         }
 
-        return View(product);
+        return View(productVM);
     }
 
     //POST
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Upsert(CoverType obj)
+    public IActionResult Upsert(ProductVM obj, IFormFile file)
     {
         if (ModelState.IsValid)
         {
-            _unitOfWork.CoverType.Update(obj);
+            //_unitOfWork.CoverType.Update(obj);
             _unitOfWork.Save();
 
             TempData["Success"] = "CoverType edited successfully";
