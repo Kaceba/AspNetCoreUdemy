@@ -1,4 +1,5 @@
-﻿using AspNetCoreUdemy.Models;
+﻿using AspNetCoreUdemy.DataAccess.Repository.IRepository;
+using AspNetCoreUdemy.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -8,15 +9,19 @@ namespace AspNetCoreUdemy.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork)
         {
-            _logger = logger;
+            this._logger = logger;
+            this._unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-            return View();
+            IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties:"Category,CoverType");
+
+            return View(productList);
         }
 
         public IActionResult Privacy()
