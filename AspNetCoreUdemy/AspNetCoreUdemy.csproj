@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AspNetCoreUdemy.DataAccess\AspNetCoreUdemy.DataAccess.csproj" />
+    <ProjectReference Include="..\AspNetCoreUdemy.Utility\AspNetCoreUdemy.Utility.csproj" />
   </ItemGroup>
 
   <ItemGroup>
